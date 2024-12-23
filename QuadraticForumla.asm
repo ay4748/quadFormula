@@ -3,9 +3,10 @@ jmp main
 a db 0
 b db 0 
 c db 0
-temp_b db b 
+temp_b db 0 
 count db 0
-ans db 0    
+ans dw 0    
+four_ac dw 0 
 
 open_msg db 10,13,"               Welcome to the Quadratic formula calculator $ "
 open2_msg db 10,13," Enter 3 numbers and we will do the calculation for you $"  ;open messeges
@@ -17,17 +18,26 @@ wrong_input_msg db 10,13, " wrong input ( enter number 1 - 9 )$"
 one_answer db 10,13," there is one answer: $"
 two_answers db 10,13," there are 2 answers: $"
 zero_answers db 10,13, " there are no answers with the a,b,c given $"
-
-
-PROC power2_temp_b; the function puts b to hte power of 2 b*b
-    pusha
-    mov al, [temp_b]
-    mov ah,0 
-    mul ax      
-    mov [temp_b], al 
-    popa
+           
+PROC print_abc_pretty
+    
+    
     ret
+ 
+ENDP print_abc_pretty
+
+
+PROC power2_temp_b
+    pusha                  
+    mov al, [b]            
+    mov [temp_b], al      
+    mov al, [temp_b]       
+    mul al                
+    mov [temp_b], al       
+    popa                  
+    ret                   
 ENDP power2_temp_b
+
     
 print_ax proc
 cmp ax, 0
@@ -93,48 +103,92 @@ input ENDP
               
 PROC check_under_root
 
-    call power2_temp_b
+    call power2_temp_b               
+    mov al, [temp_b]     
+    mov ah,0           
+    mov [ans], ax                   
+
+    pusha                            
+
+    mov ax, 4                        
+    mul [a]                          
+    mul [c]                          
+
+    mov [four_ac], ax
     
+    mov ax, [ans]                   
+    sub ax, [four_ac]
+    js none
+    jz one_ans            
+    mov [ans], ax                    
     
+    none:
+        mov dx, offset zero_answers
+        mov ah, 9h
+        int 21h
+        
+        jmp end_Proj
+        
+    one_ans:
+       mov dx, offset zero_answers
+       mov ah, 9h
+       int 21h 
+        
+        
+        
     
-    
-    
-    
-ret
+                 
+   
+    end_func:
+        popa                             
+        ret
+
 ENDP check_under_root
 
 main: 
     call open_start
-    
+   
     mov dx, offset input1_msg
     mov ah, 9h
     int 21h
     call input
     mov a,al
-             
-    mov dx, offset input2_msg
+    
+    
+    cmp al,0
+    jne cont
+    
+    mov dx, offset zero_answers
     mov ah, 9h
     int 21h
-    call input
-    mov b,al
-             
-    mov dx, offset input3_msg
-    mov ah, 9h
-    int 21h
-    call input
-    mov c,al
+    jmp end_Proj
     
     
-    
-    
+    cont:          
+        mov dx, offset input2_msg
+        mov ah, 9h
+        int 21h
+        call input
+        mov b,al
+                 
+        mov dx, offset input3_msg
+        mov ah, 9h
+        int 21h
+        call input
+        mov c,al
+        
+        
+        call check_under_root
+        
     
     
     
     
 
-    end:
+    end_proj:
         mov ah, 4Ch
-        int 21h                   
+        int 21h
+        ret                   
         
 
 

@@ -3,10 +3,11 @@ jmp main
 a db 0
 b db 0 
 c db 0
-temp_b db 0 
+temp_b  db 0 
 count db 0
 ans dw 0    
-four_ac dw 0 
+four_ac dw 0
+temp db 0 
 
 open_msg db 10,13,"               Welcome to the Quadratic formula calculator $ "
 open2_msg db 10,13," Enter 3 numbers and we will do the calculation for you $"  ;open messeges
@@ -123,19 +124,49 @@ PROC check_under_root
     mov [ans], ax                    
     
     none:
-        mov dx, offset zero_answers
+        mov dx, offset zero_answers                                     
         mov ah, 9h
         int 21h
         
         jmp end_Proj
         
     one_ans:
-       mov dx, offset zero_answers
+       mov dx, offset one_answer
        mov ah, 9h
-       int 21h 
+       int 21h
+       pusha
+       
+       mov cl, a       ; Load a into cl
+       add cl, cl      ; Compute 2 * a
+
+       mov al, b       ; Load b into al
+       mov ah, 0       ; Clear high byte of ax for division
+
+       div cl          
+       
+       mov temp,al
+       
+               
+       mov dl,'-'
+       mov ah,2
+       int 21h
+       
+       
+       
+       mov ah,0
+       mov al,temp
+       call print_ax
+       
+       
+       
+       
+       popa    
+       ;F = k * (L - l)
+       
         
         
         
+   ;x = (x + n / x) / 2;     
     
                  
    
@@ -185,7 +216,10 @@ main:
     
     
 
-    end_proj:
+    end_proj: 
+    
+        mov ah,1
+        int 21h
         mov ah, 4Ch
         int 21h
         ret                   

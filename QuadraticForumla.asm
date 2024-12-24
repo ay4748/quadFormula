@@ -7,7 +7,10 @@ temp_b  db 0
 count db 0
 ans dw 0    
 four_ac dw 0
-temp db 0 
+temp db 0
+basis db 0
+underSquare db 0
+ 
 
 open_msg db 10,13,"               Welcome to the Quadratic formula calculator $ "
 open2_msg db 10,13," Enter 3 numbers and we will do the calculation for you $"  ;open messeges
@@ -19,6 +22,10 @@ wrong_input_msg db 10,13, " wrong input ( enter number 1 - 9 )$"
 one_answer db 10,13," there is one answer: $"
 two_answers db 10,13," there are 2 answers: $"
 zero_answers db 10,13, " there are no answers with the a,b,c given $"
+a_pretty db " a =  $"
+b_pretty db " b =  $"
+c_pretty db " c =  $"
+
            
 PROC print_abc_pretty
     
@@ -26,6 +33,35 @@ PROC print_abc_pretty
     ret
  
 ENDP print_abc_pretty
+
+
+PROC square_root
+    mov al, basis    
+    mov bl, 1        
+    mov cl, 0      
+
+	square_loop:
+		mov ah, 0        
+		mov al, bl    
+		mov dl, 2
+	again:
+		mul bl
+		dec dl 
+		cmp dl, 1
+		ja  again
+		
+	
+    cmp al, basis      
+	ja square_done  
+    mov cl, bl     
+    inc bl         
+    jmp square_loop  
+
+	square_done:
+		mov al, cl
+		mov underSquare,al
+		ret
+ENDP square_root
 
 
 PROC power2_temp_b
@@ -101,6 +137,9 @@ input PROC
         sub al, '0'      
     ret
 input ENDP
+
+
+
               
 PROC check_under_root
 
@@ -155,13 +194,39 @@ PROC check_under_root
        
        mov ah,0
        mov al,temp
-       call print_ax
+       call print_ax  
+       popa
+       
+       jmp end_func
+       
+    
+   two_anwers:
+       mov dx, offset two_answers
+       mov ah, 9h
+       int 21h
+       
+       
+       
+       call square_root
+       
+       
+        
+              
+              
+              
+      
        
        
        
        
-       popa    
-       ;F = k * (L - l)
+        
+       
+        
+          
+       
+       
+       
+    
        
         
         

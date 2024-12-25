@@ -9,7 +9,9 @@ ans dw 0
 four_ac dw 0
 temp db 0
 basis db 0
-underSquare db 0
+underSquare db 0  
+ans1 db 0
+ans2 db 0
  
 
 open_msg db 10,13,"               Welcome to the Quadratic formula calculator $ "
@@ -208,8 +210,33 @@ PROC check_under_root
        
        
        call square_root
+       mov ah,0
+       mov ans,ax
+       
+       mov cl,b
        
        
+       mov temp_b,cl
+       neg temp_b
+       
+       mov cl,temp_b
+       
+       mov ans1,cl
+       mov ans2,cl
+       
+            
+       
+       
+       
+       
+       
+  ;             ax^2+bx+c
+;   |-------------------------------|
+;   |       -b +- sqrt(b^2 - 4*a*c) |
+;   |X1,2=  ----------------------- |
+;   |                 2a            |
+;   |-------------------------------|
+     
         
               
               
@@ -292,9 +319,3 @@ main:
 
 
 
-;             ax^2+bx+c
-;   |-------------------------------|
-;   |       -b +- sqrt(b^2 - 4*a*c) |
-;   |X1,2=  ----------------------- |
-;   |                 2a            |
-;   |-------------------------------|

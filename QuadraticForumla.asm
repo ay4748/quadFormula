@@ -161,7 +161,9 @@ PROC check_under_root
     mov ax, [ans]                   
     sub ax, [four_ac]
     js none
-    jz one_ans            
+    jz one_ans
+    cmp ax,0
+    ja two_anwers            
     mov [ans], ax                    
     
     none:
@@ -224,7 +226,9 @@ PROC check_under_root
        mov ans1,cl
        mov ans2,cl
        
-            
+       
+       
+       ;add ans1,ans     
        
        
        
@@ -243,21 +247,7 @@ PROC check_under_root
               
       
        
-       
-       
-       
-        
-       
-        
-          
-       
-       
-       
-    
-       
-        
-        
-        
+           
    ;x = (x + n / x) / 2;     
     
                  

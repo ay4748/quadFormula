@@ -24,46 +24,45 @@ wrong_input_msg db 10,13, " wrong input ( enter number 1 - 9 )$"
 one_answer db 10,13," there is one answer: $"
 two_answers db 10,13," there are 2 answers: $"
 zero_answers db 10,13, " there are no answers with the a,b,c given $"
-a_pretty db " a =  $"
-b_pretty db " b =  $"
-c_pretty db " c =  $"
+x_one db  10,13," X1 = $"
+x_two db  10,13," X2 = $"
+
+bye_msg db 10,13,"Bye! have a great day!. $" 
 
            
-PROC print_abc_pretty
-    
-    
-    ret
- 
-ENDP print_abc_pretty
+
+;------------------- 
+
 
 
 PROC square_root
-    mov al, basis    
+    mov al, underSquare    
     mov bl, 1        
     mov cl, 0      
 
-	square_loop:
-		mov ah, 0        
-		mov al, bl    
-		mov dl, 2
-	again:
-		mul bl
-		dec dl 
-		cmp dl, 1
-		ja  again
-		
-	
-    cmp al, basis      
-	ja square_done  
+square_loop:
+    mov ah, 0        
+    mov al, bl    
+    mov dl, 2
+lp:
+mul bl
+dec dl 
+cmp dl, 1
+ja lp
+    cmp al, underSquare      
+ja square_done  
     mov cl, bl     
     inc bl         
     jmp square_loop  
 
-	square_done:
-		mov al, cl
-		mov underSquare,al
-		ret
+square_done:
+    mov al, cl        
+    out 2, al
+    ret
 ENDP square_root
+;-------------------  
+
+
 
 
 PROC power2_temp_b
@@ -77,7 +76,11 @@ PROC power2_temp_b
     ret                   
 ENDP power2_temp_b
 
-    
+;-------------------   
+
+
+
+
 print_ax proc
 cmp ax, 0
 jne print_ax_r
@@ -105,7 +108,10 @@ pn_done:
     ret  
 endp
 
-
+  
+  
+  
+  
 PROC open_start; the function prints the start messeges  
     
     mov dx, offset open_msg
@@ -119,7 +125,11 @@ PROC open_start; the function prints the start messeges
     
     ret
 ENDP open_start    
-
+   
+   
+   
+   
+   
 input PROC
     jmp first                                   
     start:
@@ -141,7 +151,12 @@ input PROC
 input ENDP
 
 
-
+  
+  
+  
+  
+  
+  
               
 PROC check_under_root
 
@@ -209,56 +224,108 @@ PROC check_under_root
        mov ah, 9h
        int 21h
        
+       mov dx, offset new_line
+       mov ah, 9h
+       int 21h   
+       
+       call power2_temp_b               
+       mov al, [temp_b]     
+       mov ah,0           
+       mov [ans], ax                   
+
+                                   
+
+       mov ax, 4                        
+       mul [a]                          
+       mul [c]                          
+
+       mov [four_ac], ax
+    
+       mov ax, [ans]                   
+       sub ax, [four_ac] 
+       mov ah,0
+       mov underSquare,al 
        
        
        call square_root
        mov ah,0
-       mov ans,ax
+       mov ans,ax ; whats under the root is now in the ans
        
-       mov cl,b
+       ;plus 
        
+       mov ax,ans ;whats under the root
        
-       mov temp_b,cl
-       neg temp_b
-       
-       mov cl,temp_b
-       
-       mov ans1,cl
-       mov ans2,cl
+       mov bl,b ;b
+       neg bl ; -b
+       add al,bl
        
        
+       cmp al,100 ;flag to check if negetive
+       jna aftersub
+       sub:
+           mov cl,255
+           sub cl,al 
+       aftersub:
+       inc cl
+       mov al,cl
+       mov dl,a
+       add dl,dl
+       div dl
        
-       ;add ans1,ans     
+       
+       mov cx,ax
+       
+       mov dx, offset x_one
+       mov ah, 9h
+       int 21h
+       
+       mov ax,cx
+       
+       call print_ax_r
+       
+       mov dx, offset new_line
+       mov ah, 9h
+       int 21h
+       ;minus
+       
+       mov ax,ans ;whats under the root
+       mov bl,b ;b
+       neg bl ; -b
+       sub al,bl
+       
+       mov dl,a
+       add dl,dl
+       div dl
+       
+       mov cx,ax
+       
+       mov dx, offset x_two
+       mov ah, 9h
+       int 21h
+       
+       mov ax,cx 
+       
+       call print_ax_r
        
        
        
-       
-       
-  ;             ax^2+bx+c
-;   |-------------------------------|
-;   |       -b +- sqrt(b^2 - 4*a*c) |
-;   |X1,2=  ----------------------- |
-;   |                 2a            |
-;   |-------------------------------|
-     
-        
-              
-              
-              
-      
-       
-           
-   ;x = (x + n / x) / 2;     
-    
-                 
-   
     end_func:
         popa                             
         ret
 
 ENDP check_under_root
-
-main: 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+main:
+ 
     call open_start
    
     mov dx, offset input1_msg
@@ -299,13 +366,15 @@ main:
     
 
     end_proj: 
-    
+        mov dx, offset bye_msg
+        mov ah, 9h
+        int 21h
+        
         mov ah,1
         int 21h
         mov ah, 4Ch
         int 21h
         ret                   
         
-
 
 
